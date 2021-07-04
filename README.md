@@ -1,4 +1,5 @@
 # Wrecking Road :boom::car:
 ### The open source demo
+![drawing](WR.png)
 ___
-![logo](WR.png)
+
