@@ -18,7 +18,7 @@ public class RoofScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (BeamL.constraints == RigidbodyConstraints.FreezePositionY && BeamR.constraints == RigidbodyConstraints.FreezePositionY && NoMore == 0)
+        if (BeamL.constraints == RigidbodyConstraints.None && BeamR.constraints == RigidbodyConstraints.None && NoMore == 0)
         {
             
             Roof.constraints = RigidbodyConstraints.None; Roof1.constraints = RigidbodyConstraints.None; Roof2.constraints = RigidbodyConstraints.None; Roof3.constraints = RigidbodyConstraints.None;

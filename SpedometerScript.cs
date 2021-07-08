@@ -6,17 +6,41 @@ using UnityEngine.UI;
 public class SpedometerScript : MonoBehaviour
 {
     public Rigidbody grabCarSpeed;
-    private GameObject FindCar;
     Text MPHSpeed;
     public static bool FartOrNo = false;
     void Start()
     {
+
         MPHSpeed = GetComponent<Text>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (CarController.CarName == "Rogue")
+        {
+            grabCarSpeed = GameObject.Find("Rogue").GetComponent<Rigidbody>();
+        }
+        else if (CarController.CarName == "Grand Prix")
+        {
+            grabCarSpeed = GameObject.Find("Grand Prix").GetComponent<Rigidbody>();
+        }
+        else if (CarController.CarName == "Caravan")
+        {
+            grabCarSpeed = GameObject.Find("Caravan").GetComponent<Rigidbody>();
+        }
+        else if (CarController.CarName == "Elantra")
+        {
+            grabCarSpeed = GameObject.Find("Elantra").GetComponent<Rigidbody>();
+        }
+        else if (CarController.CarName == "Sentra")
+        {
+            grabCarSpeed = GameObject.Find("Sentra").GetComponent<Rigidbody>();
+        }
+        else if (CarController.CarName == "SL2")
+        {
+            grabCarSpeed = GameObject.Find("SL2").GetComponent<Rigidbody>();
+        }
         float MiddleManFloat = grabCarSpeed.velocity.magnitude * (Mathf.PI/2f);
         MiddleManFloat = Mathf.RoundToInt(MiddleManFloat);
         MPHSpeed.text = MiddleManFloat.ToString();
