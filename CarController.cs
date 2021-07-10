@@ -9,12 +9,12 @@ public class CarController : MonoBehaviour
 {
     public static Camera thisCam;
     public static CarController Vehicle;
+    public static float VehicleMultiplier;
     public float TopAccel;
     public static GameObject VehicleGO;
     public BoxCollider GetBarrier;
     private bool LoadedIn = false;
     public Rigidbody CarBody;
-    private GameObject FindCurrentWheel;
     public float BTorque;
     public GameObject CarSelect;
     public float topSpeed;
@@ -29,15 +29,12 @@ public class CarController : MonoBehaviour
     public string CarSpawned = "None";
     private float hor;
     private float ver;
-    private GameObject FindCurrentScript;
-    private float WheelAngle;
     public float RotationInWheels = 45;
     public float Acceleration;
     public char Transmission;
     public float Weight;
     public int gear;
     public Text GearText;
-    private Vector3 SpawnPos = new Vector3(1.381528f, 16.15f, -77.29884f);
     public class Car
     {
         public string ClassCarName;
@@ -82,7 +79,12 @@ public class CarController : MonoBehaviour
     }
     void Start()
     {
-
+        Spawn();
+        VehicleGO = GameObject.Find("VehicleControl");
+        
+    }
+    void Spawn()
+    {
         if (LoadedIn == false)
         {
             if (SpawnCar.CarName == "Rogue")
@@ -91,6 +93,7 @@ public class CarController : MonoBehaviour
                 CarBody = GameObject.Find(CarSpawned).GetComponent<Rigidbody>();
                 CarSelect = GameObject.Find(CarSpawned);
                 RogueSetup();
+                VehicleMultiplier = 2.25f;
                 LoadedIn = true;
                 print("Success");
             }
@@ -100,6 +103,7 @@ public class CarController : MonoBehaviour
                 CarBody = GameObject.Find(CarSpawned).GetComponent<Rigidbody>();
                 CarSelect = GameObject.Find(CarSpawned);
                 GPSetup();
+                VehicleMultiplier = 2;
                 LoadedIn = true;
                 print("Success");
             }
@@ -109,6 +113,7 @@ public class CarController : MonoBehaviour
                 CarBody = GameObject.Find(CarSpawned).GetComponent<Rigidbody>();
                 CarSelect = GameObject.Find(CarSpawned);
                 CaravanSetup();
+                VehicleMultiplier = 1.75f;
                 LoadedIn = true;
                 print("Success");
             }
@@ -118,6 +123,7 @@ public class CarController : MonoBehaviour
                 CarBody = GameObject.Find(CarSpawned).GetComponent<Rigidbody>();
                 CarSelect = GameObject.Find(CarSpawned);
                 ElantraSetup();
+                VehicleMultiplier = 0.75f;
                 LoadedIn = true;
                 print("Success");
             }
@@ -127,20 +133,21 @@ public class CarController : MonoBehaviour
                 CarBody = GameObject.Find(CarSpawned).GetComponent<Rigidbody>();
                 CarSelect = GameObject.Find(CarSpawned);
                 SentraSetup();
+                VehicleMultiplier = 1;
                 LoadedIn = true;
                 print("Success");
             }
-            if (SpawnCar.CarName == "SL2")
+            if (SpawnCar.CarName == "Cruiser")
             {
-                CarSpawned = "SL2";
+                CarSpawned = "Cruiser";
                 CarBody = GameObject.Find(CarSpawned).GetComponent<Rigidbody>();
                 CarSelect = GameObject.Find(CarSpawned);
-                SL2Setup();
+                CruiserSetup();
+                VehicleMultiplier = 0.5f;
                 LoadedIn = true;
                 print("Success");
             }
         }
-        VehicleGO = GameObject.Find("VehicleControl");
     }
     /* List for car transmission:
     -2 = Park
@@ -162,38 +169,12 @@ public class CarController : MonoBehaviour
     {
         hor = Input.GetAxis("Horizontal");
         ver = Input.GetAxis("Vertical");
-        
         Accelerate();
+        /*Accelerate();*/
         Steering();
         TurnAngle();
         GearCheck();
     }
-/*    void SpawnInCars()
-    {
-        if (CarName == "Rogue" && CarSpawned != "Rogue")
-        {
-            CarSpawned = "Rogue";
-            CarSelect.transform.position = new Vector3(0.93f, 2.52f, 24.26f);
-            CarSelect = GameObject.Find(CarName);
-            CarBody = CarSelect.GetComponent<Rigidbody>();
-            print(CarBody.name);
-            CarSelect.transform.position = SpawnPos;
-            CarSelect.transform.rotation = Quaternion.identity;
-            StartCoroutine(WaitForCarConstraints(0f));
-        }
-        if (CarName == "Grand Prix" && CarSpawned != "Grand Prix")
-        {
-            CarSpawned = "Grand Prix";
-            CarSelect.transform.position = new Vector3(12.93f, 2.52f, 24.26f);
-            CarSelect = GameObject.Find(CarName);
-            CarBody = CarSelect.GetComponent<Rigidbody>();
-            print(CarBody.name);
-            GPSetup();
-            CarSelect.transform.position = SpawnPos;
-            CarSelect.transform.rotation = Quaternion.identity;
-            StartCoroutine(WaitForCarConstraints(0f));
-        }
-    }*/
     void GearCheck()
     {
         if (Input.GetKeyDown(KeyCode.Q))
@@ -246,16 +227,17 @@ public class CarController : MonoBehaviour
             FrontRight.brakeTorque = BTorque * 1;
             FrontLeft.motorTorque = 0 * ver;
             FrontRight.motorTorque = 0 * ver;
-            return;
         }
         if (gear == -1)
         {
             ver = -Input.GetAxis("Vertical");
             if (Input.GetKey(KeyCode.S))
             {
-                print(ver);
+                ver = 0;
                 FrontLeft.brakeTorque = BTorque * ver;
                 FrontRight.brakeTorque = BTorque * ver;
+                FrontLeft.motorTorque = motorForce * ver;
+                FrontRight.motorTorque = motorForce * ver;
             }
             else
             {
@@ -265,13 +247,11 @@ public class CarController : MonoBehaviour
                 FrontLeft.motorTorque = motorForce * ver;
                 FrontRight.motorTorque = motorForce * ver;
             }
-            return;
         }
         if (gear == 0)
         {
             FrontLeft.motorTorque = 0 * ver;
             FrontRight.motorTorque = 0 * ver;
-            return;
         }
         if (ver < 0)
         {
@@ -281,11 +261,30 @@ public class CarController : MonoBehaviour
         }
         else
         {
-            print(ver);
-            FrontLeft.brakeTorque = 0 * ver;
-            FrontRight.brakeTorque = 0 * ver;
-            FrontLeft.motorTorque = motorForce * ver;
-            FrontRight.motorTorque = motorForce * ver;
+            if (Input.GetKey(KeyCode.S))
+            {
+                ver = 0;
+                FrontLeft.brakeTorque = BTorque * ver;
+                FrontRight.brakeTorque = BTorque * ver;
+                FrontLeft.motorTorque = motorForce * ver;
+                FrontRight.motorTorque = motorForce * ver;
+            }
+            else if (Input.GetKey(KeyCode.W))
+            {
+                print(ver);
+                FrontLeft.brakeTorque = 0 * ver;
+                FrontRight.brakeTorque = 0 * ver;
+                FrontLeft.motorTorque = motorForce * ver;
+                FrontRight.motorTorque = motorForce * ver;
+                FrontLeft.motorTorque = FrontLeft.motorTorque;
+                FrontRight.motorTorque = FrontRight.motorTorque;
+            } else
+            {
+                FrontLeft.brakeTorque = 0 * ver;
+                FrontRight.brakeTorque = 0 * ver;
+                FrontLeft.motorTorque = 0 * ver;
+                FrontRight.motorTorque = 0 * ver;
+            }
         }
     }
     void Steering()
@@ -326,7 +325,7 @@ public class CarController : MonoBehaviour
         GetBarrier = GameObject.Find("Rogue/Barrier").GetComponent<BoxCollider>();
         thisCam.transform.parent = GameObject.Find("VehicleControl").GetComponent<Transform>();
         GetBarrier.transform.parent = GameObject.Find("VehicleControl").GetComponent<Transform>();
-
+        CarBody.transform.position = new Vector3(-58.75f, 2.65f, -13.11008f);
     }
     public void GPSetup()
     {
@@ -347,10 +346,10 @@ public class CarController : MonoBehaviour
         GetBarrier = GameObject.Find("Grand Prix/Barrier").GetComponent<BoxCollider>();
         thisCam.transform.parent = GameObject.Find("VehicleControl").GetComponent<Transform>();
         GetBarrier.transform.parent = GameObject.Find("VehicleControl").GetComponent<Transform>();
+        CarBody.transform.position = new Vector3(-58.75f, 2.65f, -13.11008f);
     }
     public void CaravanSetup()
     {
-
         Caravan.FLeft = GameObject.Find("WheelCollider Caravan/Front Left").GetComponent<WheelCollider>(); Caravan.FRight = GameObject.Find("WheelCollider Caravan/Front Right").GetComponent<WheelCollider>(); Caravan.RLeft = GameObject.Find("WheelCollider Caravan/Rear Left").GetComponent<WheelCollider>(); Caravan.RRight = GameObject.Find("WheelCollider Caravan/Rear Right").GetComponent<WheelCollider>();
         Caravan.FL = GameObject.Find("Wheels Caravan/FrontLeft"); Caravan.FR = GameObject.Find("Wheels Caravan/FrontRight"); Caravan.RL = GameObject.Find("Wheels Caravan/RearLeftMain"); Caravan.RR = GameObject.Find("Wheels Caravan/RearRightMain");
         print("Setup Caravan");
@@ -367,10 +366,10 @@ public class CarController : MonoBehaviour
         GetBarrier = GameObject.Find("Caravan/Barrier").GetComponent<BoxCollider>();
         thisCam.transform.parent = GameObject.Find("VehicleControl").GetComponent<Transform>();
         GetBarrier.transform.parent = GameObject.Find("VehicleControl").GetComponent<Transform>();
+        CarBody.transform.position = new Vector3(-58.75f, 2.65f, -13.11008f);
     }
     public void ElantraSetup()
     {
-
         Elantra.FLeft = GameObject.Find("WheelCollider Elantra/Front Left").GetComponent<WheelCollider>(); Elantra.FRight = GameObject.Find("WheelCollider Elantra/Front Right").GetComponent<WheelCollider>(); Elantra.RLeft = GameObject.Find("WheelCollider Elantra/Rear Left").GetComponent<WheelCollider>(); Elantra.RRight = GameObject.Find("WheelCollider Elantra/Rear Right").GetComponent<WheelCollider>();
         Elantra.FL = GameObject.Find("Wheels Elantra/FrontLeft"); Elantra.FR = GameObject.Find("Wheels Elantra/FrontRight"); Elantra.RL = GameObject.Find("Wheels Elantra/RearLeftMain"); Elantra.RR = GameObject.Find("Wheels Elantra/RearRightMain");
         print("Setup Elantra");
@@ -387,10 +386,10 @@ public class CarController : MonoBehaviour
         GetBarrier = GameObject.Find("Elantra/Barrier").GetComponent<BoxCollider>();
         thisCam.transform.parent = GameObject.Find("VehicleControl").GetComponent<Transform>();
         GetBarrier.transform.parent = GameObject.Find("VehicleControl").GetComponent<Transform>();
+        CarBody.transform.position = new Vector3(-58.75f, 2.65f, -13.11008f);
     }
     public void SentraSetup()
     {
-
         Sentra.FLeft = GameObject.Find("WheelCollider Sentra/Front Left").GetComponent<WheelCollider>(); Sentra.FRight = GameObject.Find("WheelCollider Sentra/Front Right").GetComponent<WheelCollider>(); Sentra.RLeft = GameObject.Find("WheelCollider Sentra/Rear Left").GetComponent<WheelCollider>(); Sentra.RRight = GameObject.Find("WheelCollider Sentra/Rear Right").GetComponent<WheelCollider>();
         Sentra.FL = GameObject.Find("Wheels Sentra/FrontLeft"); Sentra.FR = GameObject.Find("Wheels Sentra/FrontRight"); Sentra.RL = GameObject.Find("Wheels Sentra/RearLeftMain"); Sentra.RR = GameObject.Find("Wheels Sentra/RearRightMain");
         print("Setup Sentra");
@@ -407,31 +406,33 @@ public class CarController : MonoBehaviour
         GetBarrier = GameObject.Find("Sentra/Barrier").GetComponent<BoxCollider>();
         thisCam.transform.parent = GameObject.Find("VehicleControl").GetComponent<Transform>();
         GetBarrier.transform.parent = GameObject.Find("VehicleControl").GetComponent<Transform>();
+        CarBody.transform.position = new Vector3(-58.75f, 2.65f, -13.11008f);
     }
-    public void SL2Setup()
+    public void CruiserSetup()
     {
-
-        SL2.FLeft = GameObject.Find("WheelCollider SL2/Front Left").GetComponent<WheelCollider>(); SL2.FRight = GameObject.Find("WheelCollider SL2/Front Right").GetComponent<WheelCollider>(); SL2.RLeft = GameObject.Find("WheelCollider SL2/Rear Left").GetComponent<WheelCollider>(); SL2.RRight = GameObject.Find("WheelCollider SL2/Rear Right").GetComponent<WheelCollider>();
-        SL2.FL = GameObject.Find("Wheels SL2/FrontLeft"); SL2.FR = GameObject.Find("Wheels SL2/FrontRight"); SL2.RL = GameObject.Find("Wheels SL2/RearLeftMain"); SL2.RR = GameObject.Find("Wheels SL2/RearRightMain");
-        print("Setup SL2");
-        CarName = SL2.ClassCarName;
-        BTorque = SL2.BrakeTorque;
-        Weight = SL2.Weight;
-        Transmission = SL2.Transmission;
-        maxGear = SL2.MaxGear;
-        topSpeed = SL2.MaxCarSpeed;
-        motorForce = SL2.MaxForce;
-        FL = SL2.FL; FR = SL2.FR; RL = SL2.RL; RR = SL2.RR;
-        FrontLeft = SL2.FLeft; FrontRight = SL2.FRight; RearLeft = SL2.RLeft; RearRight = SL2.RRight;
-        GetBarrier = GameObject.Find("SL2/Barrier").GetComponent<BoxCollider>();
+        Cruiser.FLeft = GameObject.Find("WheelCollider Cruiser/Front Left").GetComponent<WheelCollider>(); Cruiser.FRight = GameObject.Find("WheelCollider Cruiser/Front Right").GetComponent<WheelCollider>(); Cruiser.RLeft = GameObject.Find("WheelCollider Cruiser/Rear Left").GetComponent<WheelCollider>(); Cruiser.RRight = GameObject.Find("WheelCollider Cruiser/Rear Right").GetComponent<WheelCollider>();
+        Cruiser.FL = GameObject.Find("Wheels Cruiser/FrontLeft"); Cruiser.FR = GameObject.Find("Wheels Cruiser/FrontRight"); Cruiser.RL = GameObject.Find("Wheels Cruiser/RearLeftMain"); Cruiser.RR = GameObject.Find("Wheels Cruiser/RearRightMain");
+        print("Setup Cruiser");
+        CarName = Cruiser.ClassCarName;
+        BTorque = Cruiser.BrakeTorque;
+        Weight = Cruiser.Weight;
+        Transmission = Cruiser.Transmission;
+        maxGear = Cruiser.MaxGear;
+        topSpeed = Cruiser.MaxCarSpeed;
+        motorForce = Cruiser.MaxForce;
+        FL = Cruiser.FL; FR = Cruiser.FR; RL = Cruiser.RL; RR = Cruiser.RR;
+        FrontLeft = Cruiser.FLeft; FrontRight = Cruiser.FRight; RearLeft = Cruiser.RLeft; RearRight = Cruiser.RRight;
+        GetBarrier = GameObject.Find("Cruiser/Barrier").GetComponent<BoxCollider>();
         thisCam.transform.parent = GameObject.Find("VehicleControl").GetComponent<Transform>();
         GetBarrier.transform.parent = GameObject.Find("VehicleControl").GetComponent<Transform>();
+        CarBody.transform.position = new Vector3(-58.75f, 2.65f, -13.11008f);
     }
-
-    public Car Rogue = new Car("Rogue",  5.96f, 3.16f, 3102, placeholderWheel, placeholderWheel, placeholderWheel, placeholderWheel, placeholder, placeholder, placeholder, placeholder, 118, 3531, 1, 'C');
-    public Car GrandPrix = new Car("Grand Prix",6.24f, 3.16f, 3600, placeholderWheel, placeholderWheel, placeholderWheel, placeholderWheel, placeholder, placeholder, placeholder, placeholder, 153, 3674, 1, 'A');
-    public Car Caravan = new Car("Caravan", 7.96f, 3.16f, 4421, placeholderWheel, placeholderWheel, placeholderWheel, placeholderWheel, placeholder, placeholder, placeholder, placeholder, 128, 4995, 1, 'A');
-    public Car Elantra = new Car("Elantra", 4.41f, 3.16f, 2895, placeholderWheel, placeholderWheel, placeholderWheel, placeholderWheel, placeholder, placeholder, placeholder, placeholder, 118, 3270, 1, 'A');
-    public Car Sentra = new Car("Sentra", 4.365f, 3.16f, 3124, placeholderWheel, placeholderWheel, placeholderWheel, placeholderWheel, placeholder, placeholder, placeholder, placeholder, 118, 3531, 1, 'C');
-    public Car SL2 = new Car("SL2", 3.79f, 3.16f, 2401, placeholderWheel, placeholderWheel, placeholderWheel, placeholderWheel, placeholder, placeholder, placeholder, placeholder, 106, 2714, 1, 'A');
+    // multiply motor force by two
+    // vvv     vvv    vvv     vvv
+    public Car Rogue = new Car("Rogue", 11.92f, 3.16f, 3102, placeholderWheel, placeholderWheel, placeholderWheel, placeholderWheel, placeholder, placeholder, placeholder, placeholder, 118, 7062, 1, 'C');
+    public Car GrandPrix = new Car("Grand Prix", 12.48f, 3.16f, 3600, placeholderWheel, placeholderWheel, placeholderWheel, placeholderWheel, placeholder, placeholder, placeholder, placeholder, 153, 7348, 1, 'A');
+    public Car Caravan = new Car("Caravan", 15.92f, 3.16f, 4421, placeholderWheel, placeholderWheel, placeholderWheel, placeholderWheel, placeholder, placeholder, placeholder, placeholder, 128, 9990, 1, 'A');
+    public Car Elantra = new Car("Elantra", 8.82f, 3.16f, 2895, placeholderWheel, placeholderWheel, placeholderWheel, placeholderWheel, placeholder, placeholder, placeholder, placeholder, 118, 6540, 1, 'A');
+    public Car Sentra = new Car("Sentra", 8.73f, 3.16f, 3124, placeholderWheel, placeholderWheel, placeholderWheel, placeholderWheel, placeholder, placeholder, placeholder, placeholder, 118, 7062, 1, 'C');
+    /* in progress */ public Car Cruiser = new Car("Cruiser", 7.58f, 3.16f, 3108, placeholderWheel, placeholderWheel, placeholderWheel, placeholderWheel, placeholder, placeholder, placeholder, placeholder, 106, 5428, 1, 'A');
 }

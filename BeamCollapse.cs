@@ -21,6 +21,7 @@ public class BeamCollapse : MonoBehaviour
         {
             C1.constraints = RigidbodyConstraints.None; C2.constraints = RigidbodyConstraints.None; C3.constraints = RigidbodyConstraints.None; C4.constraints = RigidbodyConstraints.None;
             StartCoroutine(Wait1(2.5f));
+            this.tag.Replace("HouseBeam", "Dead");
         }
     }
     public IEnumerator Wait1(float seconds)

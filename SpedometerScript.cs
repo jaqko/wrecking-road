@@ -37,11 +37,11 @@ public class SpedometerScript : MonoBehaviour
         {
             grabCarSpeed = GameObject.Find("Sentra").GetComponent<Rigidbody>();
         }
-        else if (CarController.CarName == "SL2")
+        else if (CarController.CarName == "Cruiser")
         {
-            grabCarSpeed = GameObject.Find("SL2").GetComponent<Rigidbody>();
+            grabCarSpeed = GameObject.Find("Cruiser").GetComponent<Rigidbody>();
         }
-        float MiddleManFloat = grabCarSpeed.velocity.magnitude * (Mathf.PI/2f);
+        float MiddleManFloat = grabCarSpeed.velocity.magnitude * (Mathf.PI / 2);
         MiddleManFloat = Mathf.RoundToInt(MiddleManFloat);
         MPHSpeed.text = MiddleManFloat.ToString();
     }

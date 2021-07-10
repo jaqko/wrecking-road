@@ -9,7 +9,7 @@ public class CameraController : MonoBehaviour
     public Camera ElantraCam;
     public Camera CaravanCam;
     public Camera SentraCam;
-    public Camera SL2Cam;
+    public Camera CruiserCam;
     public Camera ForteCam;
     public Camera TaurusCam;
     public Camera DurangoCam;
@@ -21,7 +21,7 @@ public class CameraController : MonoBehaviour
         ElantraCam.enabled = false;
         CaravanCam.enabled = false;
         SentraCam.enabled = false;
-        SL2Cam.enabled = false;
+        CruiserCam.enabled = false;
         ForteCam.enabled = false;
         TaurusCam.enabled = false;
         DurangoCam.enabled = false;
@@ -38,7 +38,7 @@ public class CameraController : MonoBehaviour
             ElantraCam.enabled = false;
             CaravanCam.enabled = false;
             SentraCam.enabled = false;
-            SL2Cam.enabled = false;
+            CruiserCam.enabled = false;
             ForteCam.enabled = false;
             TaurusCam.enabled = false;
             DurangoCam.enabled = false;
@@ -51,7 +51,7 @@ public class CameraController : MonoBehaviour
             ElantraCam.enabled = false;
             CaravanCam.enabled = false;
             SentraCam.enabled = false;
-            SL2Cam.enabled = false;
+            CruiserCam.enabled = false;
             ForteCam.enabled = false;
             TaurusCam.enabled = false;
             DurangoCam.enabled = false;
@@ -65,7 +65,7 @@ public class CameraController : MonoBehaviour
             ElantraCam.enabled = false;
             CaravanCam.enabled = true;
             SentraCam.enabled = false;
-            SL2Cam.enabled = false;
+            CruiserCam.enabled = false;
             ForteCam.enabled = false;
             TaurusCam.enabled = false;
             DurangoCam.enabled = false;
@@ -79,7 +79,7 @@ public class CameraController : MonoBehaviour
             ElantraCam.enabled = true;
             CaravanCam.enabled = false;
             SentraCam.enabled = false;
-            SL2Cam.enabled = false;
+            CruiserCam.enabled = false;
             ForteCam.enabled = false;
             TaurusCam.enabled = false;
             DurangoCam.enabled = false;
@@ -93,26 +93,26 @@ public class CameraController : MonoBehaviour
             ElantraCam.enabled = false;
             CaravanCam.enabled = false;
             SentraCam.enabled = true;
-            SL2Cam.enabled = false;
+            CruiserCam.enabled = false;
             ForteCam.enabled = false;
             TaurusCam.enabled = false;
             DurangoCam.enabled = false;
             CivicCam.enabled = false;
             CarController.thisCam = SentraCam;
         }
-        else if (CarController.CarName == "SL2")
+        else if (CarController.CarName == "Cruiser")
         {
             RogueCam.enabled = false;
             GPCam.enabled = false;
             ElantraCam.enabled = false;
             CaravanCam.enabled = false;
             SentraCam.enabled = false;
-            SL2Cam.enabled = true;
+            CruiserCam.enabled = true;
             ForteCam.enabled = false;
             TaurusCam.enabled = false;
             DurangoCam.enabled = false;
             CivicCam.enabled = false;
-            CarController.thisCam = SL2Cam;
+            CarController.thisCam = CruiserCam;
         }
     }
 }

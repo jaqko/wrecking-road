@@ -6,19 +6,21 @@ using UnityEngine.UI;
 
 public class CrashPointCalc : MonoBehaviour
 {
-    private string LastObjHit = "Nothing";
+    private string LastObjHit = "Inactive";
     public Rigidbody Car;
     public BoxCollider ThisPart;
-    public static float ObjHit;
-    public static float PartOfCar;
-    public static float Speed;
-    public int Points;
+    private float ObjHit;
+    private float PartOfCar;
+    public float Damage;
+    private float Speed;
+    private float Points;
     public Text CountPoints;
-    public LayerMask ObstacleMask;
     private bool Deactivated = false;
     public static int TotalPoints;
     void Start()
     {
+        Car = GameObject.Find(this.transform.parent.name).GetComponent<Rigidbody>();
+        ThisPart = GetComponent<BoxCollider>();
         if (ThisPart.gameObject.name == "FrontBumper")
         {
             PartOfCar = 1.5f;
@@ -32,6 +34,7 @@ public class CrashPointCalc : MonoBehaviour
         {
             PartOfCar = 1f;
         }
+        Damage = 0;
     }
 
     RaycastHit hit;
@@ -57,38 +60,32 @@ public class CrashPointCalc : MonoBehaviour
     {
         if (Deactivated == false)
         {
-            if (other.CompareTag("HouseBeam") && LastObjHit != "HouseBeam")
+            if (other.CompareTag("HouseBeam"))
             {
-                StopCoroutine(PointCooldown(0));
-                LastObjHit = "House Beam";
+                LastObjHit = "HouseBeam";
                 print("This Works");
                 ObjHit = 25;
-                Points = Mathf.RoundToInt(Speed) * Mathf.RoundToInt(PartOfCar) * Mathf.RoundToInt(ObjHit);
+                Points = Speed * PartOfCar * ObjHit;
                 TotalPoints = TotalPoints + Mathf.RoundToInt(Points);
                 CountPoints.text = TotalPoints.ToString();
                 print(Points);
-                Deactivated = true;
             }
 
-            if (other.CompareTag("Wall") && LastObjHit != "Wall")
+            if (other.CompareTag("WallPart"))
             {
-                StopCoroutine(PointCooldown(0));
-                LastObjHit = "Wall";
+                LastObjHit = "WallPart";
                 print("This Works");
-                ObjHit = 30;
-                Points = Mathf.RoundToInt(Speed) * Mathf.RoundToInt(PartOfCar) * Mathf.RoundToInt(ObjHit);
+                ObjHit = 0.5f;
+                Points = Speed * PartOfCar * ObjHit;
                 TotalPoints = TotalPoints + Mathf.RoundToInt(Points);
                 CountPoints.text = TotalPoints.ToString();
                 print(Points);
-                Deactivated = true;
             }
-
-            if (other.CompareTag("Untagged"))
+            
+            if (other.CompareTag("Untagged") || other.CompareTag("Dead"))
             {
-                Deactivated = true;
-                StopCoroutine(PointCooldown(0));
                 print(Points);
-                LastObjHit = "Untagged";
+                LastObjHit = "Inactive";
             }
             if (RoofScript.NoMore == 1) {
                 TotalPoints = TotalPoints + 2500;
@@ -102,7 +99,6 @@ public class CrashPointCalc : MonoBehaviour
         {
             SceneManager.UnloadSceneAsync("MainMap");
             SceneManager.LoadScene("TestMap");
-            TotalPoints = 0;
             CountPoints.text = TotalPoints.ToString();
         }
     }
@@ -110,13 +106,5 @@ public class CrashPointCalc : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(seconds);
         Deactivated = false;
-    }
-    private void OnTriggerExit(Collider other)
-    {
-        if (Deactivated == true && other)
-        {
-            Deactivated = false;
-            print("True");
-        }
     }
 }

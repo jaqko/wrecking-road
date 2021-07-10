@@ -17,7 +17,6 @@ public class BrickCollapse : MonoBehaviour
     void Update()
     {
         RaycastHit hit;
-        Debug.DrawRay(new Vector3(transform.position.x, transform.position.y, transform.position.z), Vector3.down * 0.14011885f, Color.green);
         if (Physics.Raycast(new Vector3(transform.position.x, transform.position.y, transform.position.z), Vector3.down * 0.14011885f, out hit, 0.14011885f, BrickMask))
         {
             if (NoGoingBack == true)
@@ -39,6 +38,7 @@ public class BrickCollapse : MonoBehaviour
         {
             Brick.constraints = RigidbodyConstraints.None;
             NoGoingBack = true;
+            this.tag.Replace("WallPart", "Dead");
         }
     }
     public IEnumerator Wait(float seconds)

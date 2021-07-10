@@ -43,9 +43,9 @@ public class SpawnCar : MonoBehaviour
         CarName = "Sentra";
         print(CarName);
     }
-    public void SL2()
+    public void Cruiser()
     {
-        CarName = "SL2";
+        CarName = "Cruiser";
         print(CarName);
     }
     public void Forte()
